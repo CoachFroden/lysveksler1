@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Scan">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scan-trening – Random & Stafett</title>
@@ -144,6 +148,7 @@ button:hover {
 <script>
 let timer = null;
 let isRunning = false;
+let fakeChance = 0.25; // 25% lurepip
   
   function enterFocusMode() {
   document.querySelector(".controls").classList.add("hidden");
@@ -199,14 +204,26 @@ function startStafett() {
   timer = setTimeout(() => {
     beep();
 
-    const color = randomColor();
-    if (!color) return;
+const isFake = Math.random() < fakeChance;
 
-    document.body.style.backgroundColor = color;
+if (isFake) {
+  // LURE PIP – ingen farge
+  document.body.style.backgroundColor = "black";
 
-    timer = setTimeout(() => {
-      stopAll();
-    }, 5000);
+  timer = setTimeout(() => {
+    stopAll();
+  }, 2000); // kortere tid
+} else {
+  // VANLIG RUNDE
+  const color = randomColor();
+  if (!color) return;
+
+  document.body.style.backgroundColor = color;
+
+  timer = setTimeout(() => {
+    stopAll();
+  }, 3000);
+}
 
   }, delay * 1000);
 }
