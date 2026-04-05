@@ -149,6 +149,7 @@ button:hover {
 let timer = null;
 let isRunning = false;
 let fakeChance = 0.25; // 25% lurepip
+let audioCtx = null;
   
   function enterFocusMode() {
   document.querySelector(".controls").classList.add("hidden");
@@ -240,18 +241,15 @@ function stopAll() {
   exitFocusMode();
 }
 
-function beep() {
-  try {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-    oscillator.connect(audioCtx.destination);
-    oscillator.start();
-    oscillator.stop(audioCtx.currentTime + 0.2);
-  } catch (e) {
-    console.log("Lyd feilet", e);
-  }
+function beep(frequency = 800) {
+  if (!audioCtx) return;
+
+  const oscillator = audioCtx.createOscillator();
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+  oscillator.connect(audioCtx.destination);
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 0.2);
 }
 
 function showHint() {
@@ -276,6 +274,12 @@ document.addEventListener("pointerdown", (e) => {
     stopAll();
   }
 });
+
+document.addEventListener("pointerdown", () => {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}, { once: true });
 
 </script>
 
