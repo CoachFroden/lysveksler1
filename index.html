@@ -197,35 +197,38 @@ function startNormal() {
 
 function startStafett() {
   stopAll();
+
+  // 👇 LEGG INN DENNE
+  beepSound.currentTime = 0;
+  beepSound.play().catch(() => {});
+
   isRunning = true;
   enterFocusMode();
   showHint();
 
-  const delay = Math.random() * (6 - 3) + 5;
+  const delay = Math.random() * 3 + 5;
 
   timer = setTimeout(() => {
     beep();
 
-const isFake = Math.random() < fakeChance;
+    const isFake = Math.random() < fakeChance;
 
-if (isFake) {
-  // LURE PIP – ingen farge
-  document.body.style.backgroundColor = "black";
+    if (isFake) {
+      document.body.style.backgroundColor = "black";
 
-  timer = setTimeout(() => {
-    stopAll();
-  }, 2000); // kortere tid
-} else {
-  // VANLIG RUNDE
-  const color = randomColor();
-  if (!color) return;
+      timer = setTimeout(() => {
+        stopAll();
+      }, 2000);
+    } else {
+      const color = randomColor();
+      if (!color) return;
 
-  document.body.style.backgroundColor = color;
+      document.body.style.backgroundColor = color;
 
-  timer = setTimeout(() => {
-    stopAll();
-  }, 5000);
-}
+      timer = setTimeout(() => {
+        stopAll();
+      }, 5000);
+    }
 
   }, delay * 1000);
 }
