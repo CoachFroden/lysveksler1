@@ -149,8 +149,7 @@ button:hover {
 let timer = null;
 let isRunning = false;
 let fakeChance = 0.25; // 25% lurepip
-let beepSound = new Audio("langbeep.mp3");
-beepSound.preload = "auto";
+let audioCtx = null;
   
   function enterFocusMode() {
   document.querySelector(".controls").classList.add("hidden");
@@ -198,10 +197,13 @@ function startNormal() {
 function startStafett() {
   stopAll();
 
-  // 👇 LEGG INN DENNE
-  beepSound.currentTime = 0;
-  beepSound.play().catch(() => {});
-
+  // 👇 UNLOCK HER I STEDET
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } else if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  
   isRunning = true;
   enterFocusMode();
   showHint();
@@ -245,9 +247,22 @@ function stopAll() {
   exitFocusMode();
 }
 
-function beep() {
-  const sound = beepSound.cloneNode();
-  sound.play().catch(() => {});
+function beep(freq = 800) {
+  if (!audioCtx) return;
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.6);
 }
 
 function showHint() {
@@ -266,10 +281,6 @@ function showHint() {
 
   setTimeout(() => hint.remove(), 2000);
 }
-
-document.addEventListener("pointerdown", () => {
-  beepSound.play().catch(() => {});
-}, { once: true });
   
 document.addEventListener("pointerdown", (e) => {
   if (isRunning && !e.target.closest("button") && !e.target.closest("input")) {
