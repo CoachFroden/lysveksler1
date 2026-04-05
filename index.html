@@ -149,7 +149,8 @@ button:hover {
 let timer = null;
 let isRunning = false;
 let fakeChance = 0.25; // 25% lurepip
-let beepSound = new Audio("langbeep.wav");
+let beepSound = new Audio("langbeep.mp3");
+beepSound.preload = "auto";
   
   function enterFocusMode() {
   document.querySelector(".controls").classList.add("hidden");
@@ -242,8 +243,8 @@ function stopAll() {
 }
 
 function beep() {
-  beepSound.currentTime = 0;
-  beepSound.play();
+  const sound = beepSound.cloneNode();
+  sound.play().catch(() => {});
 }
 
 function showHint() {
