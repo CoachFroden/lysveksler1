@@ -149,7 +149,7 @@ button:hover {
 let timer = null;
 let isRunning = false;
 let fakeChance = 0.25; // 25% lurepip
-let audioCtx = null;
+let beepSound = new Audio("langbeep.wav");
   
   function enterFocusMode() {
   document.querySelector(".controls").classList.add("hidden");
@@ -223,7 +223,7 @@ if (isFake) {
 
   timer = setTimeout(() => {
     stopAll();
-  }, 3000);
+  }, 5000);
 }
 
   }, delay * 1000);
@@ -241,15 +241,9 @@ function stopAll() {
   exitFocusMode();
 }
 
-function beep(frequency = 800) {
-  if (!audioCtx) return;
-
-  const oscillator = audioCtx.createOscillator();
-  oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-  oscillator.connect(audioCtx.destination);
-  oscillator.start();
-  oscillator.stop(audioCtx.currentTime + 0.2);
+function beep() {
+  beepSound.currentTime = 0;
+  beepSound.play();
 }
 
 function showHint() {
@@ -268,18 +262,16 @@ function showHint() {
 
   setTimeout(() => hint.remove(), 2000);
 }
+
+document.addEventListener("pointerdown", () => {
+  beepSound.play().catch(() => {});
+}, { once: true });
   
 document.addEventListener("pointerdown", (e) => {
   if (isRunning && !e.target.closest("button") && !e.target.closest("input")) {
     stopAll();
   }
 });
-
-document.addEventListener("pointerdown", () => {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-}, { once: true });
 
 </script>
 
